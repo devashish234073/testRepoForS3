@@ -7,11 +7,13 @@ phases:
   install:
     commands:
       - echo "Installing dependencies..."
-      - mvn --version  # Verify Maven is installed
+      - chmod +x mvnw  # Make sure the Maven wrapper is executable
+      - ./mvnw --version  # Verify Maven is installed
 
   build:
     commands:
       - echo "Building with Maven..."
+      - chmod +x mvnw  # Make sure the Maven wrapper is executable
       - ./mvnw clean install  # Runs Maven build + tests
 
   post_build:
