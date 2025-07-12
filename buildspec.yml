@@ -1,11 +1,6 @@
 version: 0.2
 
 env:
-  variables:
-    # Set Maven home (adjust if using a custom path)
-    MAVEN_HOME: "/usr/share/maven"
-    # Add Maven to PATH
-    PATH: "$MAVEN_HOME/bin:$PATH"
 
 phases:
   install:
@@ -16,7 +11,7 @@ phases:
   build:
     commands:
       - echo "Building with Maven..."
-      - mvn clean install  # Runs Maven build + tests
+      - ./mvnw clean install  # Runs Maven build + tests
 
   post_build:
     commands:
