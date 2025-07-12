@@ -2,7 +2,6 @@ version: 0.2
 
 env:
   variables:
-    JAVA_VERSION: "23"  # Specify Java version
     TEST: "true"  # Example environment variable
 phases:
   install:
@@ -12,14 +11,20 @@ phases:
       # Install dependencies for Amazon Linux 2
       - yum update -y
       - yum install -y wget tar gzip
-      # Download and install OpenJDK 23
-      - wget https://download.java.net/java/GA/jdk${JAVA_VERSION}/GPL/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz
-      - tar -xzf openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz -C /opt
-      - alternatives --install /usr/bin/java java /opt/jdk-${JAVA_VERSION}/bin/java 1000
-      - alternatives --install /usr/bin/javac javac /opt/jdk-${JAVA_VERSION}/bin/javac 1000
-      - export JAVA_HOME=/opt/jdk-${JAVA_VERSION}
-      - echo "JAVA_HOME=$JAVA_HOME" >> /etc/environment
-      # Verify installations
+      # Download from official Oracle archive (updated URL)
+      - wget https://download.oracle.com/java/23/archive/jdk-23.0.2_linux-aarch64_bin.tar.gz --header "Cookie: oraclelicense=accept-securebackup-cookie"
+      # Install Java
+      - mkdir -p /usr/lib/jvm
+      - tar -xzf jdk-${JAVA_VERSION}_linux-x64_bin.tar.gz -C /usr/lib/jvm
+      - ln -s /usr/lib/jvm/jdk-${JAVA_VERSION} /usr/lib/jvm/java-${JAVA_VERSION%%.*}-oracle
+      - alternatives --install /usr/bin/java java /usr/lib/jvm/java-${JAVA_VERSION%%.*}-oracle/bin/java 1000
+      - alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-${JAVA_VERSION%%.*}-oracle/bin/javac 1000
+      - export JAVA_HOME=/usr/lib/jvm/java-${JAVA_VERSION%%.*}-oracle
+      - echo "export JAVA_HOME=${JAVA_HOME}" >> /etc/profile.d/java.sh
+      - chmod +x /etc/profile.d/java.sh
+      - source /etc/profile.d/java.sh
+      
+      # Verify
       - java -version
       - chmod +x mvnw  # Make sure the Maven wrapper is executable
       - ./mvnw --version  # Verify Maven is installed
