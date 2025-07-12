@@ -2,11 +2,22 @@ version: 0.2
 
 env:
   variables:
+    JAVA_VERSION: "23"  # Specify Java version
     TEST: "true"  # Example environment variable
 phases:
   install:
     commands:
       - echo "Installing dependencies..."
+      - echo "Installing Java $JAVA_VERSION..."
+      - apt-get update -y
+      - apt-get install -y wget tar gzip
+      - wget https://download.java.net/java/GA/jdk${JAVA_VERSION}/GPL/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz
+      - tar -xzf openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz -C /opt
+      - update-alternatives --install /usr/bin/java java /opt/jdk-${JAVA_VERSION}/bin/java 1000
+      - update-alternatives --install /usr/bin/javac javac /opt/jdk-${JAVA_VERSION}/bin/javac 1000
+      - export JAVA_HOME=/opt/jdk-${JAVA_VERSION}
+      - echo "JAVA_HOME=$JAVA_HOME" >> /etc/environment
+      - java -version  # Verify Java installation
       - chmod +x mvnw  # Make sure the Maven wrapper is executable
       - ./mvnw --version  # Verify Maven is installed
 
