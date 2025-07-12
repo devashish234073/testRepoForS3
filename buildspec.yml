@@ -2,40 +2,56 @@ version: 0.2
 
 env:
   variables:
-    TEST: "true"  # Example environment variable
+    JAVA_VERSION: "23.0.2"  # Must define this variable
+    TEST: "true"
+
 phases:
   install:
     commands:
       - echo "Installing dependencies..."
       - echo "Installing Java $JAVA_VERSION..."
-      # Install dependencies for Amazon Linux 2
+      
+      # Remove existing Java if needed
+      - yum remove -y java-* || true
+      
+      # Install dependencies
       - yum update -y
       - yum install -y wget tar gzip
-      # Download from official Oracle archive (updated URL)
-      - wget https://download.oracle.com/java/23/archive/jdk-23.0.2_linux-aarch64_bin.tar.gz
+      
+      # Download Java (note: using x64 version)
+      - wget https://download.oracle.com/java/23/archive/jdk-${JAVA_VERSION}_linux-x64_bin.tar.gz
+      
       # Install Java
       - mkdir -p /usr/lib/jvm
-      - tar -xzf jdk-23.0.2_linux-aarch64_bin.tar.gz -C /usr/lib/jvm
-      - ln -s /usr/lib/jvm/jdk-${JAVA_VERSION} /usr/lib/jvm/java-23.0.2-oracle
-      - alternatives --install /usr/bin/java java /usr/lib/jvm/java-23.0.2-oracle/bin/java 1000
-      - alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-23.0.2-oracle/bin/javac 1000
-      - export JAVA_HOME=/usr/lib/jvm/java-23.0.2-oracle
+      - tar -xzf jdk-${JAVA_VERSION}_linux-x64_bin.tar.gz -C /usr/lib/jvm
+      - ln -s /usr/lib/jvm/jdk-${JAVA_VERSION} /usr/lib/jvm/java-23-oracle
+      
+      # Configure alternatives
+      - alternatives --install /usr/bin/java java /usr/lib/jvm/java-23-oracle/bin/java 2000
+      - alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-23-oracle/bin/javac 2000
+      - alternatives --set java /usr/lib/jvm/java-23-oracle/bin/java
+      - alternatives --set javac /usr/lib/jvm/java-23-oracle/bin/javac
+      
+      # Set environment variables
+      - export JAVA_HOME=/usr/lib/jvm/java-23-oracle
       - echo "export JAVA_HOME=${JAVA_HOME}" >> /etc/profile.d/java.sh
+      - echo "export PATH=${JAVA_HOME}/bin:$PATH" >> /etc/profile.d/java.sh
       - chmod +x /etc/profile.d/java.sh
       - source /etc/profile.d/java.sh
       
       # Verify
       - java -version
-      - chmod +x mvnw  # Make sure the Maven wrapper is executable
-      - ./mvnw --version  # Verify Maven is installed
+      - echo "JAVA_HOME=$JAVA_HOME"
+      - which java
+      - chmod +x mvnw
+      - ./mvnw --version
 
   build:
     commands:
       - echo "Building with Maven..."
-      - chmod +x mvnw  # Make sure the Maven wrapper is executable
-      - ./mvnw clean install  # Runs Maven build + tests
+      - ./mvnw clean install
 
   post_build:
     commands:
       - echo "Build completed!"
-      - ls -l target/  # List generated artifacts (e.g., JAR/WAR)
+      - ls -l target/
