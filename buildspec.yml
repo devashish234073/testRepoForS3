@@ -31,8 +31,6 @@ phases:
       - alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-23-oracle/bin/javac 2000
       - alternatives --set java /usr/lib/jvm/java-23-oracle/bin/java
       - alternatives --set javac /usr/lib/jvm/java-23-oracle/bin/javac
-      
-      # Set environment variables
       - export JAVA_HOME=/usr/lib/jvm/java-23-oracle
       - echo "export JAVA_HOME=${JAVA_HOME}" >> /etc/profile.d/java.sh
       - echo "export PATH=${JAVA_HOME}/bin:$PATH" >> /etc/profile.d/java.sh
