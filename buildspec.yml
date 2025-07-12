@@ -1,7 +1,8 @@
 version: 0.2
 
 env:
-
+  variables:
+    TEST: "true"  # Example environment variable
 phases:
   install:
     commands:
