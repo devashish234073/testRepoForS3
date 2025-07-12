@@ -15,11 +15,11 @@ phases:
       - wget https://download.oracle.com/java/23/archive/jdk-23.0.2_linux-aarch64_bin.tar.gz
       # Install Java
       - mkdir -p /usr/lib/jvm
-      - tar -xzf jdk-${JAVA_VERSION}_linux-x64_bin.tar.gz -C /usr/lib/jvm
-      - ln -s /usr/lib/jvm/jdk-${JAVA_VERSION} /usr/lib/jvm/java-${JAVA_VERSION%%.*}-oracle
-      - alternatives --install /usr/bin/java java /usr/lib/jvm/java-${JAVA_VERSION%%.*}-oracle/bin/java 1000
-      - alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-${JAVA_VERSION%%.*}-oracle/bin/javac 1000
-      - export JAVA_HOME=/usr/lib/jvm/java-${JAVA_VERSION%%.*}-oracle
+      - tar -xzf jdk-23.0.2_linux-aarch64_bin.tar.gz -C /usr/lib/jvm
+      - ln -s /usr/lib/jvm/jdk-${JAVA_VERSION} /usr/lib/jvm/java-23.0.2-oracle
+      - alternatives --install /usr/bin/java java /usr/lib/jvm/java-23.0.2-oracle/bin/java 1000
+      - alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-23.0.2-oracle/bin/javac 1000
+      - export JAVA_HOME=/usr/lib/jvm/java-23.0.2-oracle
       - echo "export JAVA_HOME=${JAVA_HOME}" >> /etc/profile.d/java.sh
       - chmod +x /etc/profile.d/java.sh
       - source /etc/profile.d/java.sh
