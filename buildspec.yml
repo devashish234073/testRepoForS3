@@ -55,3 +55,10 @@ phases:
     commands:
       - echo "Build completed!"
       - ls -l target/
+      - mkdir -p deploy/target
+      - cp target/*.jar deploy/target/  # CodeDeploy will pick this up
+
+artifacts:
+  files:
+    - 'deploy/**/*'  # CodeDeploy expects this structure
+  discard-paths: no
