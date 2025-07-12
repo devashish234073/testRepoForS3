@@ -12,7 +12,7 @@ phases:
       - yum update -y
       - yum install -y wget tar gzip
       # Download from official Oracle archive (updated URL)
-      - wget https://download.oracle.com/java/23/archive/jdk-23.0.2_linux-aarch64_bin.tar.gz --header "Cookie: oraclelicense=accept-securebackup-cookie"
+      - wget https://download.oracle.com/java/23/archive/jdk-23.0.2_linux-aarch64_bin.tar.gz
       # Install Java
       - mkdir -p /usr/lib/jvm
       - tar -xzf jdk-${JAVA_VERSION}_linux-x64_bin.tar.gz -C /usr/lib/jvm
