@@ -1,8 +1,13 @@
-name: Hello World
-on: [push]
-jobs:
-  Hello-World-Job:
-    runs-on:
-      - codebuild-my_java_proj-${{ github.run_id }}-${{ github.run_attempt }}
-    steps:
-      - run: echo "Hello World"
+version: 0.2  # Required for CodeBuild
+
+phases:
+  install:
+    commands:
+      - echo "Installing dependencies..."
+  build:
+    commands:
+      - echo "Building..."
+      - echo "Hello World"
+  post_build:
+    commands:
+      - echo "Post-build steps..."
