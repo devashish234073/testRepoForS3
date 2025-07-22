@@ -1,0 +1,69 @@
+# lambda-stack.yaml
+# This CloudFormation template defines an AWS Lambda function,
+# its execution role, and a CloudWatch Log Group.
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation stack for a simple Lambda function deployed via CodePipeline.
+
+Parameters:
+  # Parameter to specify the S3 bucket where the Lambda deployment package is located.
+  LambdaCodeBucketName:
+    Type: String
+    Description: S3 bucket name where the Lambda deployment package (zip file) is stored.
+  # Parameter to specify the S3 key (path) to the Lambda deployment package.
+  LambdaCodeS3Key:
+    Type: String
+    Description: S3 key (path) to the Lambda deployment package (e.g., lambda_function.zip).
+
+Resources:
+  # IAM Role for the Lambda Function
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        # Provides basic permissions for Lambda to write logs to CloudWatch.
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  # AWS Lambda Function
+  MyLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: MyCodePipelineDeployedLambda
+      Handler: lambda_function.lambda_handler # Assumes your Python file is lambda_function.py
+      Runtime: python3.9 # Or your preferred Python runtime
+      Role: !GetAtt LambdaExecutionRole.Arn # Refers to the ARN of the IAM role defined above
+      Code:
+        S3Bucket: !Ref LambdaCodeBucketName # Uses the S3 bucket name passed as a parameter
+        S3Key: !Ref LambdaCodeS3Key # Uses the S3 key passed as a parameter
+      Timeout: 30 # Lambda timeout in seconds
+      MemorySize: 128 # Lambda memory in MB
+      Tags:
+        - Key: Project
+          Value: CodePipelineLambdaDeployment
+        - Key: Environment
+          Value: Development
+
+  # CloudWatch Log Group for the Lambda Function
+  MyLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${MyLambdaFunction}
+      RetentionInDays: 7 # Retain logs for 7 days
+
+Outputs:
+  LambdaFunctionName:
+    Description: Name of the deployed Lambda function.
+    Value: !Ref MyLambdaFunction
+  LambdaFunctionArn:
+    Description: ARN of the deployed Lambda function.
+    Value: !GetAtt MyLambdaFunction.Arn
+  LambdaExecutionRoleArn:
+    Description: ARN of the Lambda execution role.
+    Value: !GetAtt LambdaExecutionRole.Arn

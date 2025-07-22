@@ -1,0 +1,25 @@
+# buildspec.yml
+# This file is used by AWS CodeBuild to define the build process.
+
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Installing dependencies..."
+
+  pre_build:
+    commands:
+      - echo "Creating deployment package..."
+      - mkdir -p build_output
+
+  build:
+    commands:
+      - zip -r build_output/lambda_function.zip lambda_function.py
+      - cp lambda-stack.yaml build_output/lambda-stack.yaml
+
+artifacts:
+  files:
+    - build_output/lambda_function.zip
+    - build_output/lambda-stack.yaml
+  base-directory: build_output
